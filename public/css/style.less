@@ -1,0 +1,36 @@
+@base: #00274c;
+@hilite: #ffcb05;
+@back: #cccccc;
+
+@good: #00ff00;
+@warn: #ff8800;
+@bad:  #ff0000;
+
+.outline {
+	text-shadow:
+	   1px 1px 0 #000,
+	 -1px -1px 0 #000,
+	  1px -1px 0 #000,
+	  -1px 1px 0 #000,
+	   1px 1px 0 #000;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	background-color: @base;
+}
+
+header {
+	position: relative;
+	padding: 2em;
+	background-color: @hilite;
+
+
+}
