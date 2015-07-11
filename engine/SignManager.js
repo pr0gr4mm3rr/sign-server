@@ -10,6 +10,7 @@ exportFunc(registerSign);
 exportFunc(unregisterSign);
 exportFunc(unregisterSignByName);
 
+exportFunc(getSign);
 exportFunc(getPending);
 
 // Start of actual code
@@ -26,13 +27,20 @@ function registerSign(sign) {
 function unregisterSign(sign) {
   // Untrack
   signs.splice(signs.indexOf(sign), 1);
-  delete signsByName(sign.name);
+  delete signsByName[sign.name];
 }
 
 function unregisterSignByName(name) {
   // Wraps around unregisterSign
-  var sign = getSignByName(name);
+  var sign = getSign(name);
   unregisterSign(sign);
+}
+
+function getSign(name) {
+  if (signsByName.hasOwnProperty(name))
+    return signsByName[name];
+  else
+    return null;
 }
 
 function getPending() {

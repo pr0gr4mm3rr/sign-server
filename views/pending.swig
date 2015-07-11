@@ -10,7 +10,9 @@
   <div class="panel panel-info">
     <div class="panel-heading">{{ sign.name }}</div>
     <div class="panel-body">
-      <button type="button" class="btn btn-primary">Setup</button>
+      <a href="/setup/{{ sign.name }}">
+      	<button type="button" class="btn btn-primary">Setup</button>
+      </a>
     </div>
   </div>
 </div>
