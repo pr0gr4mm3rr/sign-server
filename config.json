@@ -1,3 +1,5 @@
 {
-  "database": "sign.db3"
+  "database": {
+    "file": "sign.db3"
+  }
 }
