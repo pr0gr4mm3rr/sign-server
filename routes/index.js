@@ -68,6 +68,14 @@ router.get('/jobs', function(req, res, next) {
     if (err)
       return next(err);
 
+    // Sort job tasks by ordinality
+    // TODO move to database methods
+    jobs.forEach(function(job) {
+      job.tasks.sort(function(a, b) {
+        return a.ordinality - b.ordinality;
+      });
+    });
+
     render(res, 'jobs', {
       title: 'sign-server | jobs',
       jobs: jobs
@@ -103,6 +111,19 @@ router.post('/jobs/create', function(req, res, next) {
     });
   });
   // TODO flatten
+});
+
+/* GET tasks page */
+router.get('/tasks', function(req, res, next) {
+  db.models.Task.all(function(err, tasks) {
+    if (err)
+      return next(err);
+
+    render(res, 'tasks', {
+      title: 'sign-server | tasks',
+      tasks: tasks
+    })
+  });
 });
 
 /* Several help pages */

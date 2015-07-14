@@ -51,9 +51,9 @@
   </button>
 
   {% if jobs.length %}
-    <div class="jobs">
+    <div class="e-container jobs">
       {% for job in jobs %}
-        <div class="panel panel-info job">
+        <div class="panel panel-info e-element job">
           <div class="panel-heading">{{ job.name }}</div>
           <div class="panel-body">
             {% if job.tasks.length or 1 %}
@@ -68,7 +68,7 @@
                 <tbody>
                   {% for task in job.tasks %}
                     <tr>
-                      <td>{{ task.id }}</td>
+                      <td>{{ task.ordinality }}</td>
                       <td>{{ task.name }}</td>
                       <td>{{ task.action }}</td>
                     </tr>
