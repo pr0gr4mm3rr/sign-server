@@ -41,7 +41,7 @@ function defineModels() {
 		name: { type: 'text' },
 		action: { type: 'enum', values: ['video', 'template', 'job'] },
 		value: { type: 'text' },
-		duration: { type: 'integer' }
+		duration: { type: 'integer', defaultValue: 30 }
 	});
 
 	models.Sign.hasOne('job', models.Job, {

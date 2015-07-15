@@ -126,6 +126,36 @@ router.get('/tasks', function(req, res, next) {
   });
 });
 
+/* POST to create an empty task */
+router.post('/tasks/create', function(req, res, next) {
+  if (!req.body.name)
+    return res.json({
+      error: 'Task must have a name'
+    });
+
+  // Make sure it doesn't exist
+  db.models.Task.exists({
+    name: req.body.name
+  }, function(err, exists) {
+    if (exists)
+      return res.json({
+        error: 'A Task with that name already exists'
+      });
+
+    db.models.Task.create({
+      name: req.body.name
+    }, function(err, results) {
+      if (err)
+        return res.json(err);
+
+      res.json({
+        success: true
+      });
+    });
+  });
+  // TODO flatten
+});
+
 /* Several help pages */
 router.get('/installing', function(req, res, next) {
   res.render('help/installing');

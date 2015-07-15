@@ -1,6 +1,118 @@
 {% extends "layout.swig" %}
 
+{% block scripts %}
+  <script>
+    var tasks = {{ tasks | json | safe }};
+
+    $(document).ready(function() {
+      $('#create').click(createTask);
+      $('.edit').click(editTask);
+      $('#save').click(saveTask);
+    });
+
+    function createTask() {
+      // TODO our own dialog
+      var name = prompt('Name for your task');
+
+      // Tell the server to create an empty job
+      $.post('/tasks/create', {
+        name: name
+      }).error(function onTaskCreateError(err) {
+        // TODO better handle errors
+        if (err.status >= 400)
+          alert('Server responded with an error: ' + err.status);
+        else
+          alert('Unknown error while creating task, see console');
+
+        console.log(err);
+      }).done(function onTaskCreated(data) {
+        if (data.error)
+          return alert(data.error);
+
+        if (data.success)
+        // XXX?
+          return location.reload();
+
+          // Something wicked?
+        alert(JSON.stringify(data, null, 4));
+      });
+    }
+
+    function editTask(evt) {
+      var id = $(this).attr('rel');
+      // Find appropriate task
+      var task;
+      for (var i = 0; i < tasks.length; i++) {
+        if (tasks[i].id == id) {
+          task = tasks[i];
+          break;
+        }
+      }
+      if (!task) {
+        evt.stopPropagation();
+        return alert('Task edit with bad id: ' + id);
+      }
+
+        // Set values in modal
+      populateModal(task);
+      // The modal is shown from the button, no need to .show it here
+    }
+
+    function populateModal(task) {
+      // Put the values in the boxes
+      $('#task-name').val(task.name);
+      $('#task-type').val(task.action);
+      $('#task-value').val(task.value);
+      $('#task-duration').val(task.duration);
+    }
+
+    function saveTask() {
+      // Get values from modal
+      // TODO
+    }
+  </script>
+{% endblock %}
+
 {% block content %}
+
+  <!-- Edit modal -->
+
+  <div class="modal fade edit-modal" tabindex="-1" role="dialog" aria-labelledby="taskEditModal" data-backdrop="static">
+    <div class="modal-dialog modal-lg" style="margin-top: 10em;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Edit Task</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="task-name" class="control-label">Task Name:</label>
+            <input type="text" class="form-control" id="task-name" placeholder="Widget Ad Video">
+          </div>
+
+          <div class="form-group">
+            <label for="task-type" class="control-label">Task Type:</label>
+            <input type="text" class="form-control" id="task-type" placeholder="video">
+          </div>
+
+          <div class="form-group">
+            <label for="task-value" class="control-label">Task Value:</label>
+            <input type="text" class="form-control" id="task-value" placeholder="https://youtube.com/?v=widget-advrt">
+          </div>
+
+          <div class="form-group">
+            <label for="task-duration" class="control-label">Task Duration (seconds):</label>
+            <input type="text" class="form-control" id="task-duration" placeholder="30">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close w/o Saving</button>
+          <button type="button" class="btn btn-primary" id="save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h1 style="display: inline-block">Tasks</h1>
   <button class="btn btn-success" id="create" style="margin-top: -10px; margin-left: 10px;">
     <span class="glyphicon glyphicon-plus"></span>
@@ -14,7 +126,15 @@
           <div class="panel-heading">{{ task.name }}</div>
           <div class="panel-body">
             {# TODO add more info, make nicer #}
-            A <b>{{ task.action }}</b> with a value of <b>"{{ task.value }}"</b> that runs for <b>{{ task.duration }}</b> seconds
+            A
+            <b>{{ task.action }}</b>
+            with a value of
+            <b>"{{ task.value }}"</b>
+            that runs for
+            <b>{{ task.duration }}</b>
+            seconds
+            <br/>
+            <button class="btn btn-info edit" data-target=".edit-modal" data-toggle="modal" rel="{{ task.id }}">Edit</button>
           </div>
         </div>
       {% endfor %}
