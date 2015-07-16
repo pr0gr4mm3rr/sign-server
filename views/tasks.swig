@@ -60,15 +60,40 @@
 
     function populateModal(task) {
       // Put the values in the boxes
+      $('#task-edit-id').text(task.id);
       $('#task-name').val(task.name);
-      $('#task-type').val(task.action);
+      $('#task-action').val(task.action);
       $('#task-value').val(task.value);
       $('#task-duration').val(task.duration);
     }
 
     function saveTask() {
       // Get values from modal
-      // TODO
+      var task = {};
+      task.id = $('#task-edit-id').text();
+      task.name = $('#task-name').val();
+      task.action = $('#task-action').val();
+      task.value = $('#task-value').val();
+      task.duration = $('#task-duration').val();
+
+      // POST to server
+      $.post('/tasks/edit', task).done(function(res) {
+        if (res.success) {
+          //$('#edit-alert').addClass('alert-success').text(res.msg);
+          setAlert('success', res.msg);
+        }
+      });
+    }
+
+    function setAlert(type, message) {
+      $('#edit-alert')
+      .removeClass('alert-success alert-error')
+      .addClass('alert-' + type)
+      .addClass('flash')
+      .text(message)
+      .one('animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd', function() {
+        $('#edit-alert').removeClass('flash');
+      })
     }
   </script>
 {% endblock %}
@@ -82,7 +107,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Edit Task</h4>
+          <h4 class="modal-title">Edit Task <span id="task-edit-id"></span></h4>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -91,8 +116,8 @@
           </div>
 
           <div class="form-group">
-            <label for="task-type" class="control-label">Task Type:</label>
-            <input type="text" class="form-control" id="task-type" placeholder="video">
+            <label for="task-action" class="control-label">Task Action:</label>
+            <input type="text" class="form-control" id="task-action" placeholder="video">
           </div>
 
           <div class="form-group">
@@ -106,6 +131,7 @@
           </div>
         </div>
         <div class="modal-footer">
+          <span id="edit-alert" class="alert" role="alert" style="float:left"></span>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close w/o Saving</button>
           <button type="button" class="btn btn-primary" id="save">Save</button>
         </div>

@@ -156,6 +156,29 @@ router.post('/tasks/create', function(req, res, next) {
   // TODO flatten
 });
 
+router.post('/tasks/edit', function(req, res, next) {
+  db.models.Task.get(req.body.id, function(err, task) {
+    if (err)
+      return res.json(err);
+
+    // Save new data
+    task.name = req.body.name;
+    task.action = req.body.action;
+    task.value = req.body.value;
+    task.duration = req.body.duration;
+
+    task.save(function(err) {
+      if (err)
+        return res.json(err);
+
+      res.json({
+        success: true,
+        msg: 'Task saved'
+      });
+    });
+  })
+});
+
 /* Several help pages */
 router.get('/installing', function(req, res, next) {
   res.render('help/installing');

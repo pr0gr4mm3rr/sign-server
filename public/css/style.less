@@ -2,6 +2,9 @@
 @hilite: #ffcb05;
 @back: #ccc;
 
+@success: #3c763d;
+@success-high: darken(@success, 20%);
+
 // jobs
 .e-container
 {
@@ -20,3 +23,35 @@
     margin: 1em;
     }
   }
+
+/* http://stackoverflow.com/a/11915453/1603110 */
+.flash{
+
+  -moz-animation: flash 1s ease-out;
+  -moz-animation-iteration-count: 1;
+
+  -webkit-animation: flash 1s ease-out;
+  -webkit-animation-iteration-count: 1;
+
+  -ms-animation: flash 1s ease-out;
+  -ms-animation-iteration-count: 1;
+
+}
+
+@-webkit-keyframes flash {
+    0% { background-color:none;}
+    50% { background-color:@success-high;}
+    100% {background-color:none;}
+}
+
+@-moz-keyframes flash {
+    0% { background-color:none;}
+    50% { background-color:@success-high;}
+    100% {background-color:none;}
+}
+
+@-ms-keyframes flash {
+    0% { background-color:none;}
+    50% { background-color:@success-high;}
+    100% {background-color:none;}
+}
