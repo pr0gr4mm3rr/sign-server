@@ -179,6 +179,15 @@ router.post('/tasks/edit', function(req, res, next) {
   })
 });
 
+router.get('/tasks/json', function(req, res, next) {
+  db.models.Task.all(function(err, tasks) {
+    if (err)
+      return res.json(err);
+
+    res.json(tasks);
+  })
+});
+
 /* Several help pages */
 router.get('/installing', function(req, res, next) {
   res.render('help/installing');

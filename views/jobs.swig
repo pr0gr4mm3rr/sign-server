@@ -37,12 +37,63 @@
 
     function addTask() {
       var jobID = $(this).attr('rel');
-      alert('would add to ' + jobID);
+      // Fetch list of tasks
+      $.getJSON('/tasks/json', function(tasks) {
+        // Populate task selection modal
+        var list = $('#task-select-list tbody');
+        list.empty();
+        tasks.forEach(function(task) {
+          var row = tmpl('task_row', task);
+          console.log(row);
+          list.append($(row));
+        });
+      });
     }
+  </script>
+
+  <script id="task_row" type="text/html">
+    <tr>
+      <td><%=id%></td>
+      <td><%=name%></td>
+      <td>
+        <button class="btn btn-default">Add</button>
+      </td>
+    </tr>
   </script>
 {% endblock %}
 
 {% block content %}
+  <!-- Task add modal -->
+  <div class="modal fade add-modal" tabindex="-1" role="dialog" aria-labelledby="taskEditModal" data-backdrop="static">
+    <div class="modal-dialog modal-lg" style="margin-top: 10em;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Add Tasks to Job <span id="job-add-id"></span></h4>
+        </div>
+        <div class="modal-body">
+          <table id="task-select-list" class="table">
+            <thead>
+              <tr>
+                <th>Task ID</th>
+                <th>Task name</th>
+                <th>Add to job</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <span id="edit-alert" class="alert" role="alert" style="float:left"></span>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close w/o Saving</button>
+          <button type="button" class="btn btn-primary" id="save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h1 style="display: inline-block">Jobs</h1>
 
   <button class="btn btn-success" id="create" style="margin-top: -10px; margin-left: 10px;">
@@ -79,7 +130,7 @@
               <p>Job is empty</p>
             {% endif %}
 
-            <button class="btn btn-sm btn-success task-add" rel="{{ job.id }}">
+            <button class="btn btn-sm btn-success task-add" data-target=".add-modal" data-toggle="modal" rel="{{ job.id }}">
               <span class="glyphicon glyphicon-plus"></span>
               Add Task
             </button>
