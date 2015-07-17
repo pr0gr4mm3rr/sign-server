@@ -56,8 +56,9 @@ function defineModels() {
 	models.Job.hasMany('tasks', models.Task, {
 		ordinality: { type: 'integer', unique: true }
 	}, {
+		key: true,
 		autoFetch: true
-	})
+	});
 
 	db.sync();
 }

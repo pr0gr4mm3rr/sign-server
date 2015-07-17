@@ -67,6 +67,7 @@ router.post('/:job/addtask', function(req, res, next) {
         error: err
       });
 
+      console.log(Object.keys(job));
     // Get task as well
     db.models.Task.get(req.body.task, function(err, task) {
       if (err)
@@ -75,7 +76,7 @@ router.post('/:job/addtask', function(req, res, next) {
         });
 
       // Add task to job
-      job.addTask(task, function(err) {
+      job.addTasks(task, function(err) {
         if (err)
           return res.json({
             error: err

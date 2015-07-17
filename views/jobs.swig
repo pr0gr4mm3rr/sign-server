@@ -44,8 +44,18 @@
         list.empty();
         tasks.forEach(function(task) {
           var row = tmpl('task_row', task);
-          console.log(row);
-          list.append($(row));
+          list.append(row);
+        });
+
+        // Set up events
+        $('.task-add').click(function() {
+          var task = $(this).data('task');
+          // Send to server
+          $.post('/jobs/' + jobID + '/addtask', {
+            task: task
+          }).done(function(data) {
+            console.log(data);
+          })
         });
       });
     }
@@ -53,10 +63,10 @@
 
   <script id="task_row" type="text/html">
     <tr>
-      <td><%=id%></td>
-      <td><%=name%></td>
+      <td><%= id %></td>
+      <td><%= name %></td>
       <td>
-        <button class="btn btn-default">Add</button>
+        <button class="btn btn-default task-add" data-task="<%= id %>">Add</button>
       </td>
     </tr>
   </script>
