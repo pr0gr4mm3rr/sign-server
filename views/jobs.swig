@@ -4,7 +4,8 @@
   <script>
     $(document).ready(function() {
       $('#create').click(create);
-      $('.task-add').click(addTask)
+      $('.task-add').click(addTask);
+      $('.task-remove').click(removeTask);
     });
 
     function create() {
@@ -58,6 +59,21 @@
           })
         });
       });
+    }
+
+    function removeTask() {
+      var job = $(this).data('job');
+      var ordinality = $(this).data('task');
+      var row = $(this).closest('tr');
+
+      //alert('would delete with ord=' + ordinality + '(' + job + ')');
+      $.post('/jobs/' + job + '/removetask/' + ordinality, function(data) {
+        // TODO make a better message display
+        if (data.error) return alert(data.error);
+
+        // Remove row from job
+        row.remove();
+      })
     }
   </script>
 
@@ -124,6 +140,7 @@
                     <th>#</th>
                     <th>Name</th>
                     <th>Type</th>
+                    <th>&nbsp;</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -132,6 +149,11 @@
                       <td>{{ task.ordinality }}</td>
                       <td>{{ task.name }}</td>
                       <td>{{ task.action }}</td>
+                      <td>
+                        <button type="button" class="btn btn-xs btn-danger task-remove" data-job="{{ job.id }}" data-task="{{ task.ordinality }}">
+                          <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                      </td>
                     </tr>
                   {% endfor %}
                 </tbody>
