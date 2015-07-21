@@ -30,7 +30,11 @@ function defineModels() {
 	db.settings.set('instance.cache', false);
 
 	models.Sign = db.define('sign', {
-		name: { type: 'text' }
+		name: { type: 'text' },
+		state: { type: 'enum', values: [
+			'PENDING',
+			'ACTIVE'
+		]}
 	});
 
 	models.Job = db.define('job', {

@@ -12,3 +12,7 @@ var Sign = module.exports = function Sign(name, state, ws) {
       this.state = "CLOSED";
     }.bind(this));
 };
+
+Sign.prototype.send = function(cmd, data) {
+  this.conn.send(cmd, data);
+};

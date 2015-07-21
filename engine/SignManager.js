@@ -1,4 +1,5 @@
 // A thing to manage sign objects
+var db = require('./Database');
 var Sign = require('./Sign');
 
 // exportFunc our functions here
@@ -12,6 +13,8 @@ exportFunc(unregisterSignByName);
 
 exportFunc(getSign);
 exportFunc(getPending);
+
+exportFunc(performConfiguration);
 
 // Start of actual code
 // TODO see if this is a good pattern or not
@@ -46,5 +49,27 @@ function getSign(name) {
 function getPending() {
   return signs.filter(function(e) {
     return e.state === 'PENDING';
+  });
+}
+
+function performConfiguration(sign, config, callback) {
+  if (!sign) return callback(new Error('Sign not found: ' + tempName));
+  if (sign.state !== 'PENDING') return callback(new Error('Sign was not in the pending state, already setup?'));
+
+  // Rename and commit to db
+  db.models.Sign.create(config, function(err) {
+    if (err) return callback(err);
+
+    unregisterSign(sign);
+    sign.name = config.name;
+    registerSign(sign);
+
+    sign.send('setname', {
+      name: config.name
+    });
+
+    callback(null, {
+      success: 'Created sign with name "' + config.name + '"'
+    });
   });
 }
