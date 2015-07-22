@@ -28,3 +28,33 @@ router.get('/', function(req, res, next) {
     });
   });
 });
+
+/* POST to set sign job */
+router.post('/:sign/setjob', function(req, res, next) {
+  var jobID = parseInt(req.body.job);
+
+  db.models.Sign.get(req.params.sign, function(err, sign) {
+    if (err) return res.json({error: err});
+
+    if (jobID === -1)
+      return sign.removeJob(function(err) {
+        if (err) return res.json({error: err});
+        res.json({success: 'Removed job from sign'});
+      });
+
+    db.models.Job.get(jobID, function(err, job) {
+      if (err) return res.json({error: err});
+
+      sign.setJob(job, function(err) {
+        if (err) {
+          res.json({error: err})
+        } else {
+          res.json({
+            success: 'Set new job for sign'
+          });
+        }
+      });
+      
+    });
+  });
+});

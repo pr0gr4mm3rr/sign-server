@@ -92,7 +92,7 @@ router.post('/:job/addtask', function(req, res, next) {
         job.addTasks(task, {
           ordinality: ordinality
         }, function(err) {
-          if (err) next(err);
+          if (err) return next(err);
 
           res.json({
             success: 'Added task to job'

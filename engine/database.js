@@ -58,7 +58,7 @@ function defineModels() {
 	// TODO enforce that a job cannot have itself as a child/descendant
 
 	models.Job.hasMany('tasks', models.Task, {
-		ordinality: { type: 'integer', unique: true }
+		ordinality: { type: 'integer' }
 	}, {
 		key: true,
 		autoFetch: true
