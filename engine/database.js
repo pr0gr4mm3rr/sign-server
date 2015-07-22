@@ -1,4 +1,5 @@
 var orm = require('orm');
+var sqlite = require('sqlite3');
 var config = require('../config');
 
 var conn = null;
@@ -8,11 +9,13 @@ if (!connInfo)
 	throw new Error('No database configuration found in config.json');
 
 var db = orm.connect('sqlite://' + connInfo.file);
+var dbraw = new sqlite.Database(connInfo.file);
 
 db.on('connect', function(err) {
 	if (err) return console.log('Failed to connect to database: %s', err);
 
 	console.log('Database connected');
+
 	defineModels();
 });
 
@@ -39,6 +42,16 @@ function defineModels() {
 
 	models.Job = db.define('job', {
 		name: { type: 'text' }
+	}, {
+		methods: {
+			removeTask: function(task, cb) {
+				// We have to do this ourselves
+				console.log(this.id, task.id, task.ordinality);
+				console.log(JSON.stringify(task, null, 2));
+				dbraw.run('DELETE FROM job_tasks WHERE job_id=? AND tasks_id=? AND ordinality=?',
+					[this.id, task.id, task.ordinality], cb);
+			}
+		}
 	});
 
 	models.Task = db.define('task', {
@@ -58,11 +71,23 @@ function defineModels() {
 	// TODO enforce that a job cannot have itself as a child/descendant
 
 	models.Job.hasMany('tasks', models.Task, {
-		ordinality: { type: 'integer' }
+		ordinality: { type: 'integer', key: true }
 	}, {
 		key: true,
 		autoFetch: true
 	});
 
-	db.sync();
+	db.sync(function(err) {
+		if (err)
+			throw err;
+
+			models.Job.count(function(err, c) {
+				if (c) return;
+
+				// Some example data
+				var job = models.Job.create({name: 'A Job'}, function(){});
+				var atask = models.Task.create({name: 'Alpha task', action: 'video', value: 'somewhere'}, function(){});
+			});
+
+	});
 }

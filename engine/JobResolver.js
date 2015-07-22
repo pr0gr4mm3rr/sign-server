@@ -2,7 +2,7 @@
 var async = require('async');
 var db = require('./Database');
 
-module.exports.resolve = function resolve(job, done) {
+module.exports.resolve = function resolve(job, done, blacklist) {
   if (!job.model || job.model() !== db.models.Job) {
     //  We need to get the job
     return db.models.Job.get(job, function(err, jobObj) {
@@ -12,6 +12,10 @@ module.exports.resolve = function resolve(job, done) {
     });
   }
 
+  blacklist = blacklist || [];
+  if (blacklist.indexOf(job) !== -1) return done(new Error('Recursive job nesting'));
+  blacklist.push(job);
+
   async.reduce(job.tasks, [], function(memo, task, cb) {
     if (task.action === 'job') {
       resolve(task.value, function(err, subJob) {
@@ -19,7 +23,7 @@ module.exports.resolve = function resolve(job, done) {
 
         memo = memo.concat(subJob);
         cb(null, memo);
-      });
+      }, blacklist);
     } else {
       memo.push(task);
       cb(null, memo);

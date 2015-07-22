@@ -14,6 +14,7 @@ router.get('/', function(req, res, next) {
     // Sort job tasks by ordinality
     // TODO move to database methods
     jobs.forEach(function(job) {
+      if (!job.tasks) return;
       job.tasks.sort(function(a, b) {
         return a.ordinality - b.ordinality;
       });
@@ -119,7 +120,7 @@ router.post('/:job/removetask/:task', function(req, res, next) {
     var removeOrdinality = parseInt(req.params.task);
 
     var toRemove = job.tasks.filter(function(task) {
-      return task.ordinality == removeOrdinality;
+      return task.ordinality === removeOrdinality;
     });
 
     console.log(toRemove);
@@ -131,12 +132,13 @@ router.post('/:job/removetask/:task', function(req, res, next) {
       return;
     }
 
-    job.removeTasks(toRemove, function(err) {
-      if (err) return  next(err);
+    job.removeTask(toRemove[0], function(err) {
+      if (err) return next(err);
 
       res.json({
         success: 'Task removed from job'
       });
     });
+
   });
 });
